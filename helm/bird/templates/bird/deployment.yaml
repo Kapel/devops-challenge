@@ -1,0 +1,67 @@
+{{- if .Values.bird.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "bird.fullname" . }}
+  labels:
+    {{- include "bird.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.bird.autoscaling.enabled }}
+  replicas: {{ .Values.bird.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "bird.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.bird.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "bird.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.bird.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.bird.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.bird.securityContext | nindent 12 }}
+          image: "{{ .Values.bird.image.repository }}:{{ .Values.bird.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.bird.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.bird.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.bird.resources | nindent 12 }}
+          envFrom:
+            - configMapRef:
+                name:  {{ include "bird.fullname" . }}            
+      {{- with .Values.bird.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bird.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.bird.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{ end }}
+
+---

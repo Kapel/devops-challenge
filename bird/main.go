@@ -8,6 +8,7 @@ import (
 	"math/rand/v2"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 type Bird struct {
@@ -25,12 +26,15 @@ func defaultBird(err error) Bird {
 }
 
 func getBirdImage(birdName string) (string, error) {
-    res, err := http.Get(fmt.Sprintf("http://localhost:4200?birdName=%s", url.QueryEscape(birdName)))
-    if err != nil {
-        return "", err
-    }
-    body, err := io.ReadAll(res.Body)
-    return string(body), err
+	host := os.Getenv("BIRDIMAGE_HOST") // Get the hostname from the environment variable
+	port := os.Getenv("BIRDIMAGE_PORT") // Get the port from the environment variable
+	//res, err := http.Get(fmt.Sprintf("http://localhost:4200?birdName=%s", url.QueryEscape(birdName)))
+	res, err := http.Get(fmt.Sprintf("http://%s:%s?birdName=%s", host, port, url.QueryEscape(birdName)))
+	if err != nil {
+		return "", err
+	}
+	body, err := io.ReadAll(res.Body)
+	return string(body), err
 }
 
 func getBirdFactoid() Bird {
@@ -50,12 +54,12 @@ func getBirdFactoid() Bird {
 		fmt.Printf("Error unmarshalling bird: %s", err)
 		return defaultBird(err)
 	}
-    birdImage, err := getBirdImage(bird.Name)
-    if err != nil {
-        fmt.Printf("Error in getting bird image: %s\n", err)
-        return defaultBird(err)
-    }
-    bird.Image = birdImage
+	birdImage, err := getBirdImage(bird.Name)
+	if err != nil {
+		fmt.Printf("Error in getting bird image: %s\n", err)
+		return defaultBird(err)
+	}
+	bird.Image = birdImage
 	return bird
 }
 

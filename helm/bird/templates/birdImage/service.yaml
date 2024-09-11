@@ -1,0 +1,17 @@
+{{- if .Values.birdimage.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "birdimage.fullname" . }}
+  labels:
+    {{- include "birdimage.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.birdimage.service.type }}
+  ports:
+    - port: {{ .Values.birdimage.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "birdimage.selectorLabels" . | nindent 4 }}
+{{ end }}

@@ -1,0 +1,28 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bird-deployment
+  labels:
+    app: bird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bird
+  template:
+    metadata:
+      labels:
+        app: bird
+    spec:
+      containers:
+      - name: bird
+        image: therealkapel/bird:latest 
+        env:
+        - name: BIRDIMAGE_HOST
+          value: "birdimage-service"
+        - name: BIRDIMAGE_PORT
+          value: "4200"
+        ports:
+        - containerPort: 4201
+

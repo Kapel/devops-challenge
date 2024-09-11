@@ -1,0 +1,31 @@
+# Stage 1: Build the Go application
+FROM golang:1.23-bookworm AS build
+
+# Add the entire birdImage app folder
+ADD birdImage /app
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# This is commented out as there are "no module dependencies to download"
+# Download go dependencies
+#RUN go mod download
+
+# Build the Go application
+# CGO_ENABLED is for building without static linking
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make
+
+# Stage 2: Create a minimal final image for production
+FROM alpine:latest
+
+# Expose the port your service runs on
+EXPOSE 4200
+
+# Run app as nonroot user
+USER 1001
+
+# Copy the binary from the build stage
+COPY --from=build /app/getBirdImage .
+
+# Command to run the Go application
+CMD [ "./getBirdImage" ]
