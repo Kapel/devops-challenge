@@ -28,7 +28,6 @@ func defaultBird(err error) Bird {
 func getBirdImage(birdName string) (string, error) {
 	host := os.Getenv("BIRDIMAGE_HOST") // Get the hostname from the environment variable
 	port := os.Getenv("BIRDIMAGE_PORT") // Get the port from the environment variable
-	//res, err := http.Get(fmt.Sprintf("http://localhost:4200?birdName=%s", url.QueryEscape(birdName)))
 	res, err := http.Get(fmt.Sprintf("http://%s:%s?birdName=%s", host, port, url.QueryEscape(birdName)))
 	if err != nil {
 		return "", err

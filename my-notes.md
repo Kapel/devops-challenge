@@ -34,7 +34,7 @@
     2. In order to establish the available versions of packages in my system (Debian) I've ran two commands:
 
     ```bash
-      apt list --all-versions golang   
+      apt list --all-versions golang
       apt-cache policy golang
     ```
 
@@ -110,12 +110,12 @@ We need to generate an [ssh-keypair](https://linuxconfig.org/how-to-generate-and
 
 1. Replace the path to the private key in [`scp -i ~/.ssh/lifi-test`](./terraform/kubeconfig.tf#L13)
 2. Replace the `public-key` field in [resource "aws_key_pair" "lifi-test"](./terraform/ec2.tf#L3)
-  
+
 ### Disclaimer
 
 I've created a few simple resources in order to finalise the assesment. These files can be found in the [terraform](./terraform) folder.
 
-I've been using [pre-created terraform modules](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest). This can be refactored in order to create our own modules and making the code more flexible (for reusability) - this would require us to predefine variables, environments with tfvars. Ideally I'd loop over complex variables (like a `type = object({ some_parameter = string, other_parameter = string })` ), that would allow us to easily create new instances of the called modules (creating multiple objects) and reuse the code (DRY).
+I've been using [pre-created terraform modules](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest). This can be refactored in order to create our own modules and making the code more flexible (for reusability) - this would require us to predefine variables, environments with tfvars. Ideally I'd loop over complex variables (like a `type = object({ some_parameter = string, other_parameter = string })` ), that would allow us to easily create new instances of the called modules (creating multiple objects) and reuse the code (DRY). Optionally - from what I have heard/read Terragrunt can do a few things to make code DRY, but personally I have not used it.
 
 For the sake of this excercise I've wanted to keep this simple and without the need of reinventing the wheel if we don't need to.
 
@@ -137,7 +137,7 @@ There are several ways to do this. The ones that came to my mind were:
 2. Building a packer image from an existing AMI and installing an kubernetes cluster to it.
 3. Using cloud-init to do the same as above as it's a native mechanism, we don't need any additional software and it should still do the job. [example](https://developer.hashicorp.com/terraform/tutorials/provision/cloud-init)
 
-Personally I wouldn't use cloud-init for anything complex due to it's readability. I'd go with building a packer image as it's easier to automate in the long run. Building custom images, base images, rolling out updates. However - in this case - cloud-init does it job. It's about picking the right tool for the right job. After all we don't need a massive tractor to do our small garden.
+Personally I wouldn't use cloud-init for anything more complex due to it's readability. I'd go with building a packer image as it's easier to automate in the long run. Building custom images, base images, rolling out updates. However - in this case - cloud-init does it job. It's about picking the right tool for the right job. After all we don't need a massive tractor to do our small garden.
 
 Note: in order to log into the ec2, with the Debian AMI we need to use the user `admin`
 
@@ -152,7 +152,7 @@ Note: in order to log into the ec2, with the Debian AMI we need to use the user 
   4. Using a deployment tool like ArgoCD (my prefered tool)
 
   However, I'd personally avoid manifests if possible and choose to use [Helm charts](./helm/bird).
-  
+
   *Yes, I am aware of `helm template` and I am aware that many tools actually will template/bake the Helm chart into a manifest before applying.*
 
 ### Terraform and kubeconfig "magic"
@@ -160,8 +160,8 @@ Note: in order to log into the ec2, with the Debian AMI we need to use the user 
   [*It's not magic, it's talent and sweat.*](https://www.youtube.com/watch?v=T_D3d1RWBrI)
 
   Short explanation of the janky script in [terraform/kubeconfig.tf](./terraform/kubeconfig.tf#L10-L18):
-  
-  Basically I'm trying to prevent terraform from crashing, because the cloudinit was not done. The final step in cloudinit is [exporting a kubeconfig to /tmp](./terraform/ec2.tf#L50) and this + creation of the EC2 can take a while. Therefore I've hacked a small retry mechanism that waits 20 seconds after each failed attempt up to 15 retries. After 15 retries - it'll either end or do a sed (IP replace) on the kubeconfig. Exit code != 0 we had an oopsie. Otherwise we're all good.
+
+  Basically I'm trying to prevent terraform from crashing, because the cloudinit was not done yet. The final step in cloudinit is [exporting a kubeconfig to /tmp](./terraform/ec2.tf#L50) and this + creation of the EC2 can take a while. Therefore I've hacked a small retry mechanism that waits 20 seconds after each failed attempt up to 15 retries. After 15 retries - it'll either end or do a sed (IP replace) on the kubeconfig. Exit code != 0 we had an oopsie. Otherwise we're all good.
 
 ## Bonus points: observability, helm, scaling
 
@@ -212,7 +212,7 @@ Note: in order to log into the ec2, with the Debian AMI we need to use the user 
 
   1. My personal favourite is just to use [k9s](https://k9scli.io)
   2. We can check if the svc is responding correctly by port-forwarding ourselves to `kubectl port-forward svc/birb-bird 4201:4201`. in my case the service name is birb-bird. After running the port-forward command we can run `curl http://localhost:4201` and we should see something like:
-  
+
   ```bash
   curl http://localhost:4201
   {"Name":"Blue Jay","Description":"The blue jay is a strikingly beautiful bird with its blue and white plumage, known for its intelligence and raucous calls.","Image":"\"https://images.unsplash.com/photo-1649115727823-5215e906dd57?crop=entropy\\u0026cs=tinysrgb\\u0026fit=max\\u0026fm=jpg\\u0026ixid=M3w2Mzg4NzZ8MHwxfHNlYXJjaHwxfHxCbHVlJTIwSmF5fGVufDB8fHx8MTcyNTk5MjM5OHww\\u0026ixlib=rb-4.0.     3\\u0026q=80\\u0026w=200\"\n"}
@@ -220,7 +220,7 @@ Note: in order to log into the ec2, with the Debian AMI we need to use the user 
 
   3. If we are using an ingress we can try and send a curl to that one.
   4. If we are using a service type LoadBalancer we can try curling to the LB IP (depends on the LB type)
-  
+
 ### helm validation
 
   1. We can list which releases have been deployed with helm - `helm ls -A` `-A` is for all namespaces. This way we can check the status of our helm deployment

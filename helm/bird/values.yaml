@@ -3,7 +3,7 @@ bird:
   replicaCount: 1
 
   image:
-    repository: therealkapel/bird 
+    repository: therealkapel/bird
     pullPolicy: IfNotPresent
     tag: "latest"
 
@@ -16,7 +16,7 @@ bird:
   # Leave empty for defaults. Defaults are set in the configmap.yaml file
   env:
     BIRDIMAGE_HOST: ""
-    BIRDIMAGE_PORT: 
+    BIRDIMAGE_PORT:
 
   podSecurityContext: {}
     # fsGroup: 2000
@@ -33,6 +33,7 @@ bird:
     type: ClusterIP
     port: 4201
 
+  # Before using an ingress object make sure that you have an ingress controller installed + set the correct class
   ingress:
     enabled: false
     className: ""
@@ -49,7 +50,7 @@ bird:
     #    hosts:
     #      - chart-example.local
 
-  resources: 
+  resources:
     limits:
       cpu: 100m
       memory: 128Mi
@@ -62,7 +63,7 @@ bird:
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
@@ -100,6 +101,7 @@ birdimage:
     type: ClusterIP
     port: 4200
 
+  # Before using an ingress object make sure that you have an ingress controller installed + set the correct class
   ingress:
     enabled: false
     className: ""
@@ -129,10 +131,10 @@ birdimage:
     minReplicas: 1
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
-    # targetMemoryUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
 
   nodeSelector: {}
 
   tolerations: []
 
-  affinity: {}  
+  affinity: {}

@@ -46,7 +46,7 @@ spec:
               path: /
               port: http
           resources:
-            {{- toYaml .Values.birdimage.resources | nindent 12 }}       
+            {{- toYaml .Values.birdimage.resources | nindent 12 }}
       {{- with .Values.birdimage.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

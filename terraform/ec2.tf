@@ -48,7 +48,7 @@ module "ec2_instance" {
 
     # Get the kubeconfig
     - kubectl config view --raw >> /tmp/kubeconfig
-  
+
   EOF
 
 

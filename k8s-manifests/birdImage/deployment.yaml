@@ -20,4 +20,3 @@ spec:
         image: therealkapel/birdimage:latest  # Replace this with your application image
         ports:
         - containerPort: 4200
-

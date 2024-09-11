@@ -31,8 +31,8 @@ resource "helm_release" "observability" {
     resource.aws_key_pair.lifi-test,
     resource.null_resource.scp,
   ]
-  name      = "promstack"
-  namespace = "promstack"
+  name             = "promstack"
+  namespace        = "promstack"
   create_namespace = true
 
   repository = "https://prometheus-community.github.io/helm-charts"

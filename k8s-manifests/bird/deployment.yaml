@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: bird
-        image: therealkapel/bird:latest 
+        image: therealkapel/bird:latest
         env:
         - name: BIRDIMAGE_HOST
           value: "birdimage-service"
@@ -25,4 +25,3 @@ spec:
           value: "4200"
         ports:
         - containerPort: 4201
-
