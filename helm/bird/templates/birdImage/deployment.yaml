@@ -1,0 +1,64 @@
+{{- if .Values.birdimage.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "birdimage.fullname" . }}
+  labels:
+    {{- include "birdimage.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.birdimage.autoscaling.enabled }}
+  replicas: {{ .Values.birdimage.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "birdimage.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.birdimage.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "birdimage.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.birdimage.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.birdimage.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.birdimage.securityContext | nindent 12 }}
+          image: "{{ .Values.birdimage.image.repository }}:{{ .Values.birdimage.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.birdimage.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.birdimage.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.birdimage.resources | nindent 12 }}
+      {{- with .Values.birdimage.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.birdimage.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.birdimage.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{ end }}
+
+---

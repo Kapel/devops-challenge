@@ -1,0 +1,32 @@
+{{- if and .Values.bird.enabled .Values.bird.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "bird.fullname" . }}
+  labels:
+    {{- include "bird.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "bird.fullname" . }}
+  minReplicas: {{ .Values.bird.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.bird.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.bird.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.bird.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.bird.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.bird.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end }}

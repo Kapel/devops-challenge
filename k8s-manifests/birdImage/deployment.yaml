@@ -1,0 +1,22 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: birdimage-deployment
+  labels:
+    app: birdimage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: birdimage
+  template:
+    metadata:
+      labels:
+        app: birdimage
+    spec:
+      containers:
+      - name: birdimage
+        image: therealkapel/birdimage:latest  # Replace this with your application image
+        ports:
+        - containerPort: 4200

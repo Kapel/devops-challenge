@@ -1,0 +1,10 @@
+{{- if .Values.bird.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  {{ include "bird.fullname" . }}
+  namespace: {{ include "bird.namespace" . }}
+data:
+    BIRDIMAGE_HOST: "{{ .Values.bird.env.BIRDIMAGE_HOST | default (include "birdimage.fullname" .) }}"
+    BIRDIMAGE_PORT: "{{ .Values.bird.env.BIRDIMAGE_PORT | default 4200 }}"
+{{ end }}
